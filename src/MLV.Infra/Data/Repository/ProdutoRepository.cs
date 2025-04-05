@@ -29,6 +29,8 @@ public class ProdutoRepository(MlvDbContext context) : IProdutoRepository
     public async Task<List<Produto>> ObterTodos()
     {
         return await context.Produtos
+            .Include(a => a.Categoria)
+            .Include(a => a.Vendedor)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -36,7 +38,9 @@ public class ProdutoRepository(MlvDbContext context) : IProdutoRepository
     public async Task<Produto> ObterPorId(Guid id)
     {
         return await context.Produtos
-            .FindAsync(id);
+            .Include(a => a.Categoria)
+            .Include(a => a.Vendedor)
+            .FirstOrDefaultAsync(a => a.Id == id);
     }
 
     public async Task<List<Produto>> ObterPorVendedorId(Guid vendedorId)

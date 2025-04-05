@@ -34,16 +34,16 @@ namespace MLV.Infra.Migrations
                     NormalizedUserName = table.Column<string>(type: "varchar(100)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "varchar(100)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "varchar(100)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "varchar(100)", nullable: true),
                     SecurityStamp = table.Column<string>(type: "varchar(100)", nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "varchar(100)", nullable: true),
                     PhoneNumber = table.Column<string>(type: "varchar(100)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "INTEGER", nullable: false)
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,11 +54,11 @@ namespace MLV.Infra.Migrations
                 name: "Categorias",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Nome = table.Column<string>(type: "varchar(100)", nullable: false),
-                    CriadoEm = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CriadoEm = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UsuarioCriacao = table.Column<string>(type: "varchar(100)", nullable: false),
-                    AtualizadoEm = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    AtualizadoEm = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UsuarioAlteracao = table.Column<string>(type: "varchar(100)", nullable: true)
                 },
                 constraints: table =>
@@ -70,13 +70,13 @@ namespace MLV.Infra.Migrations
                 name: "Vendedores",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     NomeFantasia = table.Column<string>(type: "varchar(100)", nullable: false),
                     Email = table.Column<string>(type: "varchar(100)", nullable: false),
                     RazaoSocial = table.Column<string>(type: "varchar(100)", nullable: true),
-                    CriadoEm = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CriadoEm = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UsuarioCriacao = table.Column<string>(type: "varchar(100)", nullable: false),
-                    AtualizadoEm = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    AtualizadoEm = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UsuarioAlteracao = table.Column<string>(type: "varchar(100)", nullable: true)
                 },
                 constraints: table =>
@@ -88,8 +88,8 @@ namespace MLV.Infra.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RoleId = table.Column<string>(type: "varchar(100)", nullable: false),
                     ClaimType = table.Column<string>(type: "varchar(100)", nullable: true),
                     ClaimValue = table.Column<string>(type: "varchar(100)", nullable: true)
@@ -108,8 +108,8 @@ namespace MLV.Infra.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "varchar(100)", nullable: false),
                     ClaimType = table.Column<string>(type: "varchar(100)", nullable: true),
                     ClaimValue = table.Column<string>(type: "varchar(100)", nullable: true)
@@ -188,16 +188,17 @@ namespace MLV.Infra.Migrations
                 name: "Produtos",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    CategoriaId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    VendedorId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CategoriaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VendedorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Nome = table.Column<string>(type: "varchar(100)", nullable: false),
                     Descricao = table.Column<string>(type: "varchar(2048)", nullable: true),
-                    Valor = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Estoque = table.Column<int>(type: "INTEGER", nullable: false),
-                    CriadoEm = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Valor = table.Column<decimal>(type: "decimal(38,2)", nullable: false),
+                    Estoque = table.Column<int>(type: "int", nullable: false),
+                    ImagemNome = table.Column<string>(type: "varchar(100)", nullable: true),
+                    CriadoEm = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UsuarioCriacao = table.Column<string>(type: "varchar(100)", nullable: false),
-                    AtualizadoEm = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    AtualizadoEm = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UsuarioAlteracao = table.Column<string>(type: "varchar(100)", nullable: true)
                 },
                 constraints: table =>
@@ -224,7 +225,8 @@ namespace MLV.Infra.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -250,7 +252,8 @@ namespace MLV.Infra.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Produtos_CategoriaId",

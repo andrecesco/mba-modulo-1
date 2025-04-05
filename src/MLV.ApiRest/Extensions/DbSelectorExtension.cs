@@ -12,7 +12,8 @@ public static class DbSelectorExtension
         {
             builder.Services.AddDbContext<MlvDbContext>(options =>
             {
-                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnectionLite"));
+                //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
         }
         else

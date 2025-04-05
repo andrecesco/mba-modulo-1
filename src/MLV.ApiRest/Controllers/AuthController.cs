@@ -41,14 +41,14 @@ public class AuthController(SignInManager<IdentityUser> signInManager,
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var result = await signInManager.PasswordSignInAsync(userLogin.UserName, userLogin.Senha,
+        var result = await signInManager.PasswordSignInAsync(userLogin.Email, userLogin.Senha,
             false, true);
 
         if (result.Succeeded)
         {
             var user = await userManager.GetUserAsync(User);
 
-            var token = await GerarJwt(userLogin.UserName);
+            var token = await GerarJwt(userLogin.Email);
 
             var userResponse = await CarregarUserResponse(user, token);
 
@@ -73,8 +73,8 @@ public class AuthController(SignInManager<IdentityUser> signInManager,
 
         var user = new IdentityUser
         {
-            UserName = newUser.UserName,
-            Email = newUser.UserName,
+            UserName = newUser.Email,
+            Email = newUser.Email,
             EmailConfirmed = true
         };
 
@@ -90,7 +90,7 @@ public class AuthController(SignInManager<IdentityUser> signInManager,
             {
                 Id = Guid.Parse(user.Id),
                 Email = user.Email,
-                NomeFantasia = user.UserName
+                NomeFantasia = newUser.Nome
             });
 
             if (!resultVendedor.IsValid)

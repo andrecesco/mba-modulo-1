@@ -10,6 +10,10 @@ public sealed class ProdutoMapping : IEntityTypeConfiguration<Produto>
     {
         builder.HasKey(c => c.Id);
 
+        builder.Property(e => e.Valor)
+            .HasColumnType("decimal(38,2)")
+            .IsRequired();
+
         builder.Property(e => e.Descricao)
             .HasColumnType("varchar(2048)");
 
