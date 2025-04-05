@@ -32,16 +32,16 @@ public static class DbMigrationHelper
     {
         var userId = Guid.NewGuid();
         var categoriaId = Guid.NewGuid();
-        var userName = "admin@admin.com.br";
+        var nome = "admin";
+        var email = "admin@admin.com.br";
 
         if (!context.Users.Any())
         {
-            var email = "admin@admin.com.br";
             await context.Users.AddAsync(new IdentityUser
             {
                 Id = userId.ToString(),
-                UserName = userName,
-                NormalizedUserName = userName.ToUpper(),
+                UserName = email,
+                NormalizedUserName = email.ToUpper(),
                 Email = email,
                 NormalizedEmail = email.ToUpper(),
                 AccessFailedCount = 0,
@@ -53,20 +53,20 @@ public static class DbMigrationHelper
                 SecurityStamp = Guid.NewGuid().ToString(),
             });
 
-            await context.Vendedores.AddAsync(new Vendedor(userId, userName, email, userName, userName));
+            await context.Vendedores.AddAsync(new Vendedor(userId, nome, email, nome, email));
 
             await context.SaveChangesAsync();
         }
 
         if (!context.Categorias.Any())
         {
-            await context.Categorias.AddAsync(new Categoria(categoriaId, "Eletrônicos, TV e Áudio", userName));
+            await context.Categorias.AddAsync(new Categoria(categoriaId, "Eletrônicos, TV e Áudio", email));
             await context.SaveChangesAsync();
         }
 
         if (!context.Produtos.Any())
         {
-            await context.Produtos.AddAsync(new Produto(Guid.NewGuid(), categoriaId, userId, "Headphone Philips bluetooth on-ear com microfone e energia para 15 horas na cor preto TAH1108BK/55", "Tenha a experiência sonora Philips. Curta cada minuto de suas músicas e conteúdos com um som nítido e com todas as frequências aguda, média e grave bem definidas", 102, 100, "imagem-base.jpg", userName));
+            await context.Produtos.AddAsync(new Produto(Guid.NewGuid(), categoriaId, userId, "Headphone Philips bluetooth on-ear com microfone e energia para 15 horas na cor preto TAH1108BK/55", "Tenha a experiência sonora Philips. Curta cada minuto de suas músicas e conteúdos com um som nítido e com todas as frequências aguda, média e grave bem definidas", 102, 100, "imagem-base.jpg", email));
             await context.SaveChangesAsync();
         }
     }
