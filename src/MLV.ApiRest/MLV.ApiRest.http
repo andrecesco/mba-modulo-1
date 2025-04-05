@@ -1,0 +1,6 @@
+@MLV.ApiRest_HostAddress = http://localhost:5208
+
+GET {{MLV.ApiRest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
