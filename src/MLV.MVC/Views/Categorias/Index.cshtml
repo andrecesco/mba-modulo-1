@@ -1,0 +1,53 @@
+﻿@model IEnumerable<MLV.Business.Models.Categoria>
+
+<p>
+    <a class="btn btn-primary" asp-action="Criar">Nova Categoria</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CriadoEm)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UsuarioCriacao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AtualizadoEm)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UsuarioAlteracao)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CriadoEm)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UsuarioCriacao)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AtualizadoEm)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UsuarioAlteracao)
+                </td>
+                <td>
+                    <a asp-action="Alterar" asp-route-id="@item.Id">Editar</a> |
+                    <a asp-action="Remover" asp-route-id="@item.Id">Remover</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

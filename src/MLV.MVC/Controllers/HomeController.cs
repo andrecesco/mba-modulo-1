@@ -1,21 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
+using MLV.Business.Interfaces;
 using MLV.MVC.Models;
 using System.Diagnostics;
 
 namespace MLV.MVC.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ILogger<HomeController> logger, IProdutoRepository produtoRepository) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        public async Task<IActionResult> Index()
         {
-            _logger = logger;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
+            logger.LogInformation("Listando os produtos");
+            var produtos = await produtoRepository.ObterTodos();
+            return View(produtos);
         }
 
         public IActionResult Privacy()

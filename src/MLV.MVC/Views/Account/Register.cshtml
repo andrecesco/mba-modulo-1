@@ -1,0 +1,41 @@
+﻿@model MLV.MVC.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Registro";
+}
+
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            <div class="text-center col mb-4">
+                <form asp-action="Register" method="post">
+                    <h1 class="h3 mb-3 fw-normal">Registro</h1>
+                    <div class="form-floating">
+                        <input asp-for="Nome" class="form-control" id="floatingInputNome" placeholder="nome" />
+                        <label for="floatingInputNome">Nome</label>
+                        <span asp-validation-for="Nome"></span>
+                    </div>
+                    <br />
+                    <div class="form-floating">
+                        <input asp-for="Email" class="form-control" placeholder="name@example.com" id="floatingInputEmail" />
+                        <label for="floatingInputEmail">Email</label>
+                        <span asp-validation-for="Email"></span>
+                    </div>
+                    <br />
+                    <div class="form-floating">
+                        <input asp-for="Senha" type="password" class="form-control" placeholder="Senha" id="floatingPassword" />
+                        <label for="floatingPassword">Senha</label>
+                        <span asp-validation-for="Senha"></span>
+                    </div>
+                    <br />
+                    <div class="form-floating">
+                        <input asp-for="ConfirmaSenha" type="password" class="form-control" placeholder="Confirma Senha" id="floatingCofirmPassword" />
+                        <label for="floatingCofirmPassword">Confirma Senha</label>
+                        <span asp-validation-for="ConfirmaSenha"></span>
+                    </div>
+                    <br />
+                    <button class="btn btn-primary w-100 py-2" type="submit">Entrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

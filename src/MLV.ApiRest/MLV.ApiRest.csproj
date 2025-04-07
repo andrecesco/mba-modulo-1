@@ -7,7 +7,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="FluentValidation" Version="11.11.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.14" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.14">
 			<PrivateAssets>all</PrivateAssets>
@@ -17,6 +16,10 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\MLV.Infra\MLV.Infra.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Imagens\" />
 	</ItemGroup>
 
 </Project>

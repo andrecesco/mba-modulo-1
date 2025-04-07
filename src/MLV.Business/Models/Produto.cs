@@ -15,13 +15,13 @@ public class Produto : Entity
     public string Descricao { get; private set; }
     public decimal Valor {  get; private set; }
     public int Estoque { get; private set; }
-    public string ImagemNome { get; private set; }
+    public string CaminhoImagem { get; private set; }
 
     //EF Relations
     public Categoria Categoria { get; set; }
     public Vendedor Vendedor { get; set; }
 
-    public Produto(Guid id, Guid categoriaId, Guid vendedorId, string nome, string descricao, decimal valor, int estoque, string imagemNome, string usuarioCriacao)
+    public Produto(Guid id, Guid categoriaId, Guid vendedorId, string nome, string descricao, decimal valor, int estoque, string caminhoImagem, string usuarioCriacao)
     {
         Id = id;
         CategoriaId = categoriaId;
@@ -30,17 +30,18 @@ public class Produto : Entity
         Descricao = descricao.Trim();
         Valor = valor;
         Estoque = estoque;
-        ImagemNome = imagemNome;
+        CaminhoImagem = caminhoImagem;
         UsuarioCriacao = usuarioCriacao;
     }
 
-    public void AtualizarProduto(Guid categoriaId, string nome, string descricao, decimal valor, int estoque, string usuarioAlteracao)
+    public void AtualizarProduto(Guid categoriaId, string nome, string descricao, decimal valor, int estoque, string caminhoImagem, string usuarioAlteracao)
     {
         CategoriaId = categoriaId;
         Nome = nome.Trim();
         Descricao = descricao.Trim();
         Valor = valor;
         Estoque = estoque;
+        CaminhoImagem = caminhoImagem;
         UsuarioAlteracao = usuarioAlteracao;
     }
 }

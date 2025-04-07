@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using MLV.ApiRest.Extensions;
 using MLV.ApiRest.ViewModels;
 using MLV.Business.Commands;
+using MLV.Core.Api;
 using MLV.Core.Mediator;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

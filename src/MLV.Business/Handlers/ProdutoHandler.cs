@@ -15,7 +15,7 @@ public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarComman
     private readonly ICategoriaRepository _categoriaRepository;
     private readonly string _usuarioLogado;
     private readonly Guid _userId;
-    private readonly string _diretorioBase = "Imagens";
+    private readonly string _diretorioBase = "../../Imagens";
 
     public ProdutoHandler(IProdutoRepository produtoRepository, ICategoriaRepository categoriaRepository, IHttpContextAccessor httpContextAccessor)
     {
@@ -35,18 +35,20 @@ public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarComman
     {
         if (!request.IsValid()) return request.ValidationResult;
 
-        var imagemNome = await CarregarImagem(request.Scheme, request.Host, request.Imagem);
+        var caminhoImagem = ObterCaminhoDaImagem(request.Imagem);
 
-        if(string.IsNullOrWhiteSpace(imagemNome))
+        if(string.IsNullOrWhiteSpace(caminhoImagem))
             return ValidationResult;
 
-        var produto = new Produto(request.Id, request.CategoriaId, _userId, request.Nome, request.Descricao, request.Valor, request.Estoque, imagemNome, _usuarioLogado);
+        var produto = new Produto(request.Id, request.CategoriaId, _userId, request.Nome, request.Descricao, request.Valor, request.Estoque, caminhoImagem, _usuarioLogado);
 
         if(!await ValidarCategoriaExiste(produto.CategoriaId))
         {
             AdicionarErro("Categoria não foi encontrada.");
             return ValidationResult;
         }
+
+        await SalvarImagem(caminhoImagem, request.Imagem);
 
         _produtoRepository.Adicionar(produto);
 
@@ -65,7 +67,12 @@ public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarComman
             return ValidationResult;
         }
 
-        produto.AtualizarProduto(request.CategoriaId, request.Nome, request.Descricao, request.Valor, request.Estoque, _usuarioLogado);
+        var caminhoImagem = ObterCaminhoDaImagem(request.Imagem);
+
+        if (string.IsNullOrWhiteSpace(caminhoImagem))
+            return ValidationResult;
+
+        produto.AtualizarProduto(request.CategoriaId, request.Nome, request.Descricao, request.Valor, request.Estoque, caminhoImagem, _usuarioLogado);
 
         if (!await ValidarCategoriaExiste(produto.CategoriaId))
         {
@@ -78,6 +85,8 @@ public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarComman
             AdicionarErro("Este produto não pertence ao seu catálogo");
             return ValidationResult;
         }
+
+        await SalvarImagem(caminhoImagem, request.Imagem);
 
         _produtoRepository.Atualizar(produto);
 
@@ -115,7 +124,7 @@ public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarComman
         return produto is not null && produto.FirstOrDefault(p => p.Id == id) is not null;
     }
 
-    private async Task<string> CarregarImagem(string scheme, string host, IFormFile arquivo)
+    private string ObterCaminhoDaImagem(IFormFile arquivo)
     {
         if (arquivo == null || arquivo.Length == 0)
         {
@@ -124,7 +133,7 @@ public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarComman
         }
 
         string extensao = Path.GetExtension(arquivo.FileName);
-        string[] extensoesPermitidas = { ".jpg", ".jpeg", ".png", ".gif" };
+        string[] extensoesPermitidas = [".jpg", ".jpeg", ".png", ".gif"];
         if (!Array.Exists(extensoesPermitidas, e => e.Equals(extensao, StringComparison.OrdinalIgnoreCase)))
         {
             AdicionarErro($"Extensão de arquivo não permitida: {extensao}");
@@ -135,13 +144,14 @@ public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarComman
 
         string caminhoCompleto = Path.Combine(_diretorioBase, nomeArquivo);
 
-        using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
-        {
-            await arquivo.CopyToAsync(stream);
-        }
+        var caminhoCompleto2 = Path.GetFullPath(_diretorioBase);
 
-        string urlImagem = $"{scheme}://{host}/{_diretorioBase}/{nomeArquivo}";
+        return caminhoCompleto;
+    }
 
-        return nomeArquivo;
+    private static async Task SalvarImagem(string caminhoCompleto, IFormFile arquivo)
+    {
+        using var stream = new FileStream(caminhoCompleto, FileMode.Create);
+        await arquivo.CopyToAsync(stream);
     }
 }

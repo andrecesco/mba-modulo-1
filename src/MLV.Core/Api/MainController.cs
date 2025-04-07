@@ -1,7 +1,7 @@
 ﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MLV.ApiRest.Controllers;
+namespace MLV.Core.Api;
 
 [ApiController]
 public abstract class MainController : ControllerBase

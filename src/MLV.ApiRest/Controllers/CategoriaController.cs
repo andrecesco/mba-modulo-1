@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MLV.Business.Commands;
 using MLV.Business.Interfaces;
 using MLV.Business.Models;
+using MLV.Core.Api;
 using MLV.Core.Mediator;
 using MLV.Infra.Data.Repository;
 

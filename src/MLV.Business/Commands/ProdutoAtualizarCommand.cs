@@ -54,6 +54,9 @@ public class ProdutoAtualizarCommand : Command
             RuleFor(m => m.Estoque)
                 .GreaterThan(0)
                 .WithMessage("O campo {PropertyName} precisa ser fornecido e deve ser maior do que zero");
+            RuleFor(m => m.Imagem)
+                .NotEmpty()
+                .WithMessage("O campo {PropertyName} precisa ser fornecido");
         }
     }
 }

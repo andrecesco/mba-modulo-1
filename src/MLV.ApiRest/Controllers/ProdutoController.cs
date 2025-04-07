@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MLV.Business.Commands;
 using MLV.Business.Interfaces;
 using MLV.Business.Models;
+using MLV.Core.Api;
 using MLV.Core.Mediator;
 using MLV.Infra.Data.Repository;
 
@@ -61,6 +62,8 @@ public class ProdutoController(IProdutoRepository produtoRepository,
             return NotFound();
 
         command.Id = id;
+        command.Scheme = Request.Scheme;
+        command.Host = $"{Request.Host}";
         var result = await mediatorHandler.EnviarComando(command);
 
         if (!result.IsValid)
