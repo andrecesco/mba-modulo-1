@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MLV.Business.Data;
 using MLV.Business.Models;
-using MLV.Infra.Data;
 
 namespace MLV.ApiRest.Configuration;
 

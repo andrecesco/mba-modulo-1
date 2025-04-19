@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MLV.Business.Data;
 using MLV.Business.Models;
-using MLV.Infra.Data;
 
 namespace MLV.MVC.Configuration;
 

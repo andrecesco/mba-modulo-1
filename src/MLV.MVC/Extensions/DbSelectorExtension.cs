@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MLV.Infra.Data;
+using MLV.Business.Data;
 
 namespace MLV.MVC.Extensions;
 

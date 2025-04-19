@@ -15,7 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\MLV.Infra\MLV.Infra.csproj" />
+		<ProjectReference Include="..\MLV.Business\MLV.Business.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

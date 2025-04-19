@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using MLV.ApiRest.Extensions;
-using MLV.Infra.Data;
+using MLV.Business.Data;
 using System.Text;
 
 namespace MLV.ApiRest.Configuration;

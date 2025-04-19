@@ -1,23 +1,22 @@
 ﻿using FluentValidation.Results;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using MLV.Business.Commands;
-using MLV.Business.Interfaces;
+using MLV.Business.Data.Repository.Interfaces;
 using MLV.Business.Models;
-using MLV.Core.Messages;
+using MLV.Business.Services.Interfaces;
 using System.Security.Claims;
 
-namespace MLV.Business.Handlers;
+namespace MLV.Business.Services;
 
-public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarCommand, ValidationResult>, IRequestHandler<ProdutoAtualizarCommand, ValidationResult>, IRequestHandler<ProdutoRemoverCommand, ValidationResult>
+public class ProdutoService : ServiceHandler, IProdutoService
 {
     private readonly IProdutoRepository _produtoRepository;
     private readonly ICategoriaRepository _categoriaRepository;
-    private readonly string _usuarioLogado;
     private readonly Guid _userId;
+    private readonly string _usuarioLogado;
     private readonly string _diretorioBase = "../../Imagens";
 
-    public ProdutoHandler(IProdutoRepository produtoRepository, ICategoriaRepository categoriaRepository, IHttpContextAccessor httpContextAccessor)
+    public ProdutoService(IProdutoRepository produtoRepository, ICategoriaRepository categoriaRepository, IHttpContextAccessor httpContextAccessor)
     {
         var httpContext = httpContextAccessor.HttpContext;
         if (httpContext == null || httpContext.User.Identity == null || !httpContext.User.Identity.IsAuthenticated)
@@ -31,18 +30,18 @@ public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarComman
         _categoriaRepository = categoriaRepository;
     }
 
-    public async Task<ValidationResult> Handle(ProdutoCriarCommand request, CancellationToken cancellationToken)
+    public async Task<ValidationResult> Adicionar(ProdutoRequest request)
     {
         if (!request.IsValid()) return request.ValidationResult;
 
         var caminhoImagem = ObterCaminhoDaImagem(request.Imagem);
 
-        if(string.IsNullOrWhiteSpace(caminhoImagem))
+        if (string.IsNullOrWhiteSpace(caminhoImagem))
             return ValidationResult;
 
         var produto = new Produto(request.Id, request.CategoriaId, _userId, request.Nome, request.Descricao, request.Valor, request.Estoque, caminhoImagem, _usuarioLogado);
 
-        if(!await ValidarCategoriaExiste(produto.CategoriaId))
+        if (!await ValidarCategoriaExiste(produto.CategoriaId))
         {
             AdicionarErro("Categoria não foi encontrada.");
             return ValidationResult;
@@ -55,13 +54,13 @@ public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarComman
         return await PersistirDados(_produtoRepository.UnitOfWork);
     }
 
-    public async Task<ValidationResult> Handle(ProdutoAtualizarCommand request, CancellationToken cancellationToken)
+    public async Task<ValidationResult> Alterar(ProdutoRequest request)
     {
         if (!request.IsValid()) return request.ValidationResult;
 
         var produto = await _produtoRepository.ObterPorId(request.Id);
 
-        if(produto is null)
+        if (produto is null)
         {
             AdicionarErro("O produto não foi encontrado.");
             return ValidationResult;
@@ -80,7 +79,7 @@ public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarComman
             return ValidationResult;
         }
 
-        if(!await ValidarProdutoPertenceAoVendedor(produto.Id))
+        if (!await ValidarProdutoPertenceAoVendedor(produto.Id))
         {
             AdicionarErro("Este produto não pertence ao seu catálogo");
             return ValidationResult;
@@ -93,15 +92,24 @@ public class ProdutoHandler : CommandHandler, IRequestHandler<ProdutoCriarComman
         return await PersistirDados(_produtoRepository.UnitOfWork);
     }
 
-    public async Task<ValidationResult> Handle(ProdutoRemoverCommand request, CancellationToken cancellationToken)
+    public async Task<ValidationResult> Remover(Guid id)
     {
-        if (!request.IsValid()) return request.ValidationResult;
+        if (id == Guid.Empty)
+        {
+            AdicionarErro("O id precisa ser informado.");
+        }
 
-        var produto = await _produtoRepository.ObterPorId(request.Id);
+        var produto = await _produtoRepository.ObterPorId(id);
 
         if (produto is null)
         {
             AdicionarErro("O produto não foi encontrado.");
+            return ValidationResult;
+        }
+
+        if (!await ValidarProdutoPertenceAoVendedor(id))
+        {
+            AdicionarErro("Este produto não pertence ao seu catálogo");
             return ValidationResult;
         }
 

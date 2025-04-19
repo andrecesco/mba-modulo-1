@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using MLV.Core.Messages;
 using System.Text.Json.Serialization;
 
 namespace MLV.Business.Commands;
 
-public class ProdutoAtualizarCommand : Command
+public class ProdutoRequest : RequestBase
 {
     [JsonIgnore]
     public Guid Id { get; set; }
@@ -21,6 +20,11 @@ public class ProdutoAtualizarCommand : Command
     [JsonIgnore]
     public string Host { get; set; }
 
+    public ProdutoRequest()
+    {
+        Id = Guid.NewGuid();
+    }
+
     public override bool IsValid()
     {
         ValidationResult = new ProdutoValidation().Validate(this);
@@ -28,7 +32,7 @@ public class ProdutoAtualizarCommand : Command
         return ValidationResult.IsValid;
     }
 
-    private sealed class ProdutoValidation : AbstractValidator<ProdutoAtualizarCommand>
+    private sealed class ProdutoValidation : AbstractValidator<ProdutoRequest>
     {
         public ProdutoValidation()
         {

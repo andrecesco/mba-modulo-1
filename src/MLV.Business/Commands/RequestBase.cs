@@ -1,19 +1,14 @@
 ﻿using FluentValidation.Results;
-using MediatR;
 using System.Text.Json.Serialization;
 
-namespace MLV.Core.Messages;
-public class Command : IRequest<ValidationResult>
+namespace MLV.Business.Commands;
+public class RequestBase
 {
-    [JsonIgnore]
-    public DateTime Timestamp { get; private set; }
-
     [JsonIgnore]
     public ValidationResult ValidationResult { get; set; }
 
-    protected Command()
+    protected RequestBase()
     {
-        Timestamp = DateTime.Now;
         ValidationResult = new ValidationResult();
     }
 

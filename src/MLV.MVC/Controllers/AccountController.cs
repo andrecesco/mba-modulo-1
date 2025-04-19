@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MLV.Business.Commands;
-using MLV.Core.Mediator;
+using MLV.Business.Services.Interfaces;
 using MLV.MVC.Models;
 
 namespace MLV.MVC.Controllers;
 
-public class AccountController(UserManager<IdentityUser> userManager,SignInManager<IdentityUser> signInManager,
-                      IMediatorHandler mediatorHandler) : Controller
+public class AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
+                      IVendedorService vendedorService) : Controller
 {
     [HttpGet]
     public IActionResult Register()
@@ -62,7 +62,7 @@ public class AccountController(UserManager<IdentityUser> userManager,SignInManag
 
             if (result.Succeeded)
             {
-                var resultVendedor = await mediatorHandler.EnviarComando(new VendedorCommand
+                var resultVendedor = await vendedorService.Adicionar(new VendedorRequest
                 {
                     Id = Guid.Parse(user.Id),
                     Email = user.Email,

@@ -1,4 +1,4 @@
-﻿using MLV.Core.Data;
+﻿using MLV.Business.Data;
 using System.ComponentModel.DataAnnotations;
 
 namespace MLV.Business.Models;

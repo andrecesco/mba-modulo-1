@@ -1,17 +1,15 @@
 ﻿using FluentValidation.Results;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using MLV.Business.Commands;
-using MLV.Business.Interfaces;
+using MLV.Business.Data.Repository.Interfaces;
 using MLV.Business.Models;
-using MLV.Core.Messages;
-using System.Runtime.CompilerServices;
+using MLV.Business.Services.Interfaces;
 
-namespace MLV.Business.Handlers;
+namespace MLV.Business.Services;
 
-public class VendedorHandler(IVendedorRepository repository, IHttpContextAccessor httpContextAccessor) : CommandHandler, IRequestHandler<VendedorCommand, ValidationResult>, IRequestHandler<VendedorAtualizarCommand, ValidationResult>
+public class VendedorService(IVendedorRepository repository, IHttpContextAccessor httpContextAccessor) : ServiceHandler, IVendedorService
 {
-    public async Task<ValidationResult> Handle(VendedorCommand request, CancellationToken cancellationToken)
+    public async Task<ValidationResult> Adicionar(VendedorRequest request)
     {
         var vendedor = new Vendedor(request.Id, request.NomeFantasia, request.Email, request.RazaoSocial, request.NomeFantasia);
 
@@ -20,7 +18,7 @@ public class VendedorHandler(IVendedorRepository repository, IHttpContextAccesso
         return await PersistirDados(repository.UnitOfWork);
     }
 
-    public async Task<ValidationResult> Handle(VendedorAtualizarCommand request, CancellationToken cancellationToken)
+    public async Task<ValidationResult> Alterar(VendedorRequest request)
     {
         var httpContext = httpContextAccessor.HttpContext;
         if (httpContext == null || httpContext.User.Identity == null || !httpContext.User.Identity.IsAuthenticated)

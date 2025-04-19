@@ -1,7 +1,7 @@
 ﻿using MLV.Business.Models;
 using MLV.Core.Repository;
 
-namespace MLV.Business.Interfaces;
+namespace MLV.Business.Data.Repository.Interfaces;
 
 public interface IProdutoRepository : IRepository<Produto>
 {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MLV.ApiRest.Configuration;
-using MLV.Infra.Data;
+using MLV.Business.Data;
 
 namespace MLV.ApiRest.Extensions;
 

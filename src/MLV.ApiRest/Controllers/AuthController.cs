@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MLV.ApiRest.Api;
 using MLV.ApiRest.Extensions;
 using MLV.ApiRest.ViewModels;
 using MLV.Business.Commands;
-using MLV.Core.Api;
-using MLV.Core.Mediator;
+using MLV.Business.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -20,7 +20,7 @@ namespace MLV.ApiRest.Controllers;
 [Route("api/auth")]
 public class AuthController(SignInManager<IdentityUser> signInManager,
                       UserManager<IdentityUser> userManager,
-                      IMediatorHandler mediatorHandler,
+                      IVendedorService vendedorService,
                       IOptions<JwtSettings> jwtSettings) : MainController
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
@@ -87,7 +87,7 @@ public class AuthController(SignInManager<IdentityUser> signInManager,
 
             var usuarioResposta = await CarregarUserResponse(user, token);
 
-            var resultVendedor = await mediatorHandler.EnviarComando(new VendedorCommand
+            var resultVendedor = await vendedorService.Adicionar(new VendedorRequest
             {
                 Id = Guid.Parse(user.Id),
                 Email = user.Email,

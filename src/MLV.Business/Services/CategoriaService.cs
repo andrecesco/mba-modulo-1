@@ -1,23 +1,17 @@
 ﻿using FluentValidation.Results;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using MLV.Business.Commands;
-using MLV.Business.Interfaces;
+using MLV.Business.Data.Repository.Interfaces;
 using MLV.Business.Models;
-using MLV.Core.Messages;
-using System.Security.Claims;
+using MLV.Business.Services.Interfaces;
 
-namespace MLV.Business.Handlers;
-
-
-public class CategoriaHandler : CommandHandler, IRequestHandler<CategoriaCriarCommand, ValidationResult>, IRequestHandler<CategoriaAtualizarCommand, ValidationResult>, IRequestHandler<CategoriaRemoverCommand, ValidationResult>
+namespace MLV.Business.Services;
+public class CategoriaService : ServiceHandler, ICategoriaService
 {
     private readonly ICategoriaRepository _categoriaRepository;
     private readonly IProdutoRepository _produtoRepository;
     private readonly string _usuarioLogado;
-    private readonly Guid _userId;
-
-    public CategoriaHandler(ICategoriaRepository categoriaRepository, IProdutoRepository produtoRepository, IHttpContextAccessor httpContextAccessor)
+    public CategoriaService(ICategoriaRepository categoriaRepository, IProdutoRepository produtoRepository, IHttpContextAccessor httpContextAccessor)
     {
         var httpContext = httpContextAccessor.HttpContext;
         if (httpContext == null || httpContext.User.Identity == null || !httpContext.User.Identity.IsAuthenticated)
@@ -25,13 +19,12 @@ public class CategoriaHandler : CommandHandler, IRequestHandler<CategoriaCriarCo
             throw new UnauthorizedAccessException("Usuário não está autenticado.");
         }
 
-        _userId = Guid.Parse(httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
         _usuarioLogado = httpContext.User.Identity.Name;
         _categoriaRepository = categoriaRepository;
         _produtoRepository = produtoRepository;
     }
 
-    public async Task<ValidationResult> Handle(CategoriaCriarCommand request, CancellationToken cancellationToken)
+    public async Task<ValidationResult> Adicionar(CategoriaRequest request)
     {
         if (!request.IsValid()) return request.ValidationResult;
 
@@ -48,7 +41,7 @@ public class CategoriaHandler : CommandHandler, IRequestHandler<CategoriaCriarCo
         return await PersistirDados(_categoriaRepository.UnitOfWork);
     }
 
-    public async Task<ValidationResult> Handle(CategoriaAtualizarCommand request, CancellationToken cancellationToken)
+    public async Task<ValidationResult> Alterar(CategoriaRequest request)
     {
         if (!request.IsValid()) return request.ValidationResult;
 
@@ -73,11 +66,14 @@ public class CategoriaHandler : CommandHandler, IRequestHandler<CategoriaCriarCo
         return await PersistirDados(_categoriaRepository.UnitOfWork);
     }
 
-    public async Task<ValidationResult> Handle(CategoriaRemoverCommand request, CancellationToken cancellationToken)
+    public async Task<ValidationResult> Remover(Guid id)
     {
-        if (!request.IsValid()) return request.ValidationResult;
+        if (id == Guid.Empty)
+        {
+            AdicionarErro("O id precisa ser informado.");
+        }
 
-        var categoria = await _categoriaRepository.ObterPorId(request.Id);
+        var categoria = await _categoriaRepository.ObterPorId(id);
 
         if (categoria is null)
         {
@@ -85,7 +81,7 @@ public class CategoriaHandler : CommandHandler, IRequestHandler<CategoriaCriarCo
             return ValidationResult;
         }
 
-        if (!await ValidarSeNaoTemProdutos(request.Id))
+        if (!await ValidarSeNaoTemProdutos(id))
         {
             AdicionarErro("Não é possível remover esta categoria, pois existem produtos associados.");
             return ValidationResult;
@@ -96,11 +92,11 @@ public class CategoriaHandler : CommandHandler, IRequestHandler<CategoriaCriarCo
         return await PersistirDados(_categoriaRepository.UnitOfWork);
     }
 
-    public async Task<bool> ValidarCategoriaUnicaPorNome(string nome, Guid? id = null)
+    private async Task<bool> ValidarCategoriaUnicaPorNome(string nome, Guid? id = null)
     {
         var categoria = await _categoriaRepository.ObterPorNome(nome);
 
-        if (categoria is null) 
+        if (categoria is null)
             return true;
 
         if (id.HasValue && categoria.Id == id.Value)
@@ -109,7 +105,7 @@ public class CategoriaHandler : CommandHandler, IRequestHandler<CategoriaCriarCo
         return false;
     }
 
-    public async Task<bool> ValidarSeNaoTemProdutos(Guid id)
+    private async Task<bool> ValidarSeNaoTemProdutos(Guid id)
     {
         var produtos = await _produtoRepository.ObterPorCategoriaId(id);
 

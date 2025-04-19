@@ -1,14 +1,18 @@
 ﻿using FluentValidation;
-using MLV.Core.Messages;
 using System.Text.Json.Serialization;
 
 namespace MLV.Business.Commands;
 
-public class CategoriaAtualizarCommand : Command
+public class CategoriaRequest : RequestBase
 {
     [JsonIgnore]
     public Guid Id { get; set; }
     public string Nome { get; set; }
+
+    public CategoriaRequest()
+    {
+        Id = Guid.NewGuid();
+    }
 
     public override bool IsValid()
     {
@@ -17,7 +21,7 @@ public class CategoriaAtualizarCommand : Command
         return ValidationResult.IsValid;
     }
 
-    private sealed class CategoriaValidation : AbstractValidator<CategoriaAtualizarCommand>
+    private sealed class CategoriaValidation : AbstractValidator<CategoriaRequest>
     {
         public CategoriaValidation()
         {

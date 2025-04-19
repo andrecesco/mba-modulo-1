@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MLV.ApiRest.Api;
 using MLV.Business.Commands;
-using MLV.Business.Interfaces;
+using MLV.Business.Data.Repository.Interfaces;
 using MLV.Business.Models;
-using MLV.Core.Api;
-using MLV.Core.Mediator;
+using MLV.Business.Services.Interfaces;
 
 namespace MLV.ApiRest.Controllers;
 
 [Authorize]
 [Route("api/vendedores")]
 public class VendedorController(IVendedorRepository vendedorRepository,
-                      IMediatorHandler mediatorHandler) : MainController
+                      IVendedorService vendedorService) : MainController
 {
     [HttpGet()]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Vendedor>))]
@@ -34,15 +34,16 @@ public class VendedorController(IVendedorRepository vendedorRepository,
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Vendedor>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Alterar(Guid id, VendedorAtualizarCommand command)
+    public async Task<ActionResult> Alterar(Guid id, VendedorRequest request)
     {
         var vendedor = await vendedorRepository.ObterPorId(id);
 
-        if(vendedor is null)
+        if (vendedor is null)
             return NotFound();
 
-        command.Id = id;
-        var result = await mediatorHandler.EnviarComando(command);
+        request.Id = id;
+        request.Email = request.Email;
+        var result = await vendedorService.Alterar(request);
 
         if (!result.IsValid)
             return CustomResponse(result);

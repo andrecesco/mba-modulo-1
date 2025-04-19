@@ -1,18 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MLV.ApiRest.Api;
 using MLV.Business.Commands;
-using MLV.Business.Interfaces;
+using MLV.Business.Data.Repository.Interfaces;
 using MLV.Business.Models;
-using MLV.Core.Api;
-using MLV.Core.Mediator;
-using MLV.Infra.Data.Repository;
+using MLV.Business.Services.Interfaces;
 
 namespace MLV.ApiRest.Controllers;
 
 [Authorize]
 [Route("api/categorias")]
 public class CategoriaController(ICategoriaRepository categoriaRepository,
-                      IMediatorHandler mediatorHandler) : MainController
+                      ICategoriaService categoriaService) : MainController
 {
     [AllowAnonymous]
     [HttpGet()]
@@ -40,29 +39,29 @@ public class CategoriaController(ICategoriaRepository categoriaRepository,
     [HttpPost()]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    public async Task<ActionResult> Criar(CategoriaCriarCommand command)
+    public async Task<ActionResult> Criar(CategoriaRequest request)
     {
-        var result = await mediatorHandler.EnviarComando(command);
+        var result = await categoriaService.Adicionar(request);
 
         if (!result.IsValid)
             return CustomResponse(result);
 
-        return CreatedAtAction(nameof(ObterPorId), new { id = command.Id }, null);
+        return CreatedAtAction(nameof(ObterPorId), new { id = request.Id }, null);
     }
 
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    public async Task<ActionResult> Alterar(Guid id, CategoriaAtualizarCommand command)
+    public async Task<ActionResult> Alterar(Guid id, CategoriaRequest request)
     {
         var categoria = await categoriaRepository.ObterPorId(id);
 
         if (categoria is null)
             return NotFound();
 
-        command.Id = id;
-        var result = await mediatorHandler.EnviarComando(command);
+        request.Id = id;
+        var result = await categoriaService.Alterar(request);
 
         if (!result.IsValid)
             return CustomResponse(result);
@@ -81,9 +80,7 @@ public class CategoriaController(ICategoriaRepository categoriaRepository,
         if (categoria is null)
             return NotFound();
 
-        var command = new CategoriaRemoverCommand(id);
-
-        var result = await mediatorHandler.EnviarComando(command);
+        var result = await categoriaService.Remover(id);
 
         if (!result.IsValid)
             return CustomResponse(result);

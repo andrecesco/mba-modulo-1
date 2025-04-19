@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using MLV.Business.Interfaces;
+using MLV.Business.Data.Repository.Interfaces;
 using MLV.MVC.Models;
 using System.Diagnostics;
 

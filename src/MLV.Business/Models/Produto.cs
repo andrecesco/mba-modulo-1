@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using MLV.Core.Data;
+﻿using MLV.Business.Data;
 using System.ComponentModel.DataAnnotations;
 
 namespace MLV.Business.Models;
@@ -13,7 +12,7 @@ public class Produto : Entity
     [Required]
     public string Nome { get; private set; }
     public string Descricao { get; private set; }
-    public decimal Valor {  get; private set; }
+    public decimal Valor { get; private set; }
     public int Estoque { get; private set; }
     public string CaminhoImagem { get; private set; }
 

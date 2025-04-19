@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
-using MLV.Core.Messages;
 using System.Text.Json.Serialization;
 
 namespace MLV.Business.Commands;
 
-public class VendedorAtualizarCommand : Command
+public class VendedorRequest : RequestBase
 {
     [JsonIgnore]
     public Guid Id { get; set; }
+    [JsonIgnore]
+    public string Email { get; set; }
     public string NomeFantasia { get; set; }
     public string RazaoSocial { get; set; }
 
@@ -18,7 +19,7 @@ public class VendedorAtualizarCommand : Command
         return ValidationResult.IsValid;
     }
 
-    private sealed class VendedorValidation : AbstractValidator<VendedorAtualizarCommand>
+    private sealed class VendedorValidation : AbstractValidator<VendedorRequest>
     {
         public VendedorValidation()
         {

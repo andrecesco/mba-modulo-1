@@ -1,18 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MLV.ApiRest.Api;
 using MLV.Business.Commands;
-using MLV.Business.Interfaces;
+using MLV.Business.Data.Repository.Interfaces;
 using MLV.Business.Models;
-using MLV.Core.Api;
-using MLV.Core.Mediator;
-using MLV.Infra.Data.Repository;
+using MLV.Business.Services;
 
 namespace MLV.ApiRest.Controllers;
 
 [Authorize]
 [Route("api/produtos")]
 public class ProdutoController(IProdutoRepository produtoRepository,
-                      IMediatorHandler mediatorHandler) : MainController
+                      ProdutoService produtoService) : MainController
 {
     [AllowAnonymous]
     [HttpGet()]
@@ -37,34 +36,34 @@ public class ProdutoController(IProdutoRepository produtoRepository,
     [HttpPost()]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    public async Task<ActionResult> Criar(ProdutoCriarCommand command)
+    public async Task<ActionResult> Criar(ProdutoRequest request)
     {
-        command.Scheme = Request.Scheme;
-        command.Host = $"{Request.Host}";
+        request.Scheme = Request.Scheme;
+        request.Host = $"{Request.Host}";
 
-        var result = await mediatorHandler.EnviarComando(command);
+        var result = await produtoService.Adicionar(request);
 
         if (!result.IsValid)
             return CustomResponse(result);
 
-        return CreatedAtAction(nameof(ObterPorId), new { id = command.Id }, null);
+        return CreatedAtAction(nameof(ObterPorId), new { id = request.Id }, null);
     }
 
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    public async Task<ActionResult> Alterar(Guid id, ProdutoAtualizarCommand command)
+    public async Task<ActionResult> Alterar(Guid id, ProdutoRequest request)
     {
         var produto = await produtoRepository.ObterPorId(id);
 
         if (produto is null)
             return NotFound();
 
-        command.Id = id;
-        command.Scheme = Request.Scheme;
-        command.Host = $"{Request.Host}";
-        var result = await mediatorHandler.EnviarComando(command);
+        request.Id = id;
+        request.Scheme = Request.Scheme;
+        request.Host = $"{Request.Host}";
+        var result = await produtoService.Alterar(request);
 
         if (!result.IsValid)
             return CustomResponse(result);
@@ -83,9 +82,7 @@ public class ProdutoController(IProdutoRepository produtoRepository,
         if (produto is null)
             return NotFound();
 
-        var command = new ProdutoRemoverCommand(id);
-
-        var result = await mediatorHandler.EnviarComando(command);
+        var result = await produtoService.Remover(id);
 
         if (!result.IsValid)
             return CustomResponse(result);

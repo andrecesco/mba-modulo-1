@@ -1,4 +1,4 @@
-﻿using MLV.Core.Data;
+﻿using MLV.Business.Data;
 using System.ComponentModel.DataAnnotations;
 
 namespace MLV.Business.Models;
@@ -9,7 +9,7 @@ public class Vendedor : Entity
     public string NomeFantasia { get; private set; }
     [Required]
     public string Email { get; private set; }
-    
+
     public string RazaoSocial { get; private set; }
 
     public Vendedor(Guid id, string nomeFantasia, string email, string razaoSocial, string usuarioCriacao)
@@ -24,7 +24,7 @@ public class Vendedor : Entity
     internal void AtualizarDados(string nomeFantasia, string razaoSocial, string usuarioAlteracao)
     {
         NomeFantasia = nomeFantasia;
-        RazaoSocial= razaoSocial;
+        RazaoSocial = razaoSocial;
         UsuarioAlteracao = usuarioAlteracao;
     }
 }

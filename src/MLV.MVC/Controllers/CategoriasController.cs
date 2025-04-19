@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MLV.Business.Commands;
-using MLV.Business.Interfaces;
-using MLV.Business.Models;
-using MLV.Core.Mediator;
-using MLV.Infra.Data.Repository;
+using MLV.Business.Data.Repository.Interfaces;
+using MLV.Business.Services.Interfaces;
 
 namespace MLV.MVC.Controllers;
 
 [Authorize]
-public class CategoriasController(ICategoriaRepository categoriaRepository,
-                      IMediatorHandler mediatorHandler) : Controller
+public class CategoriasController(ICategoriaService categoriaService, ICategoriaRepository categoriaRepository) : Controller
 {
     [AllowAnonymous]
     [HttpGet()]
@@ -29,9 +26,9 @@ public class CategoriasController(ICategoriaRepository categoriaRepository,
 
     [HttpPost()]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Criar(CategoriaCriarCommand command)
+    public async Task<IActionResult> Criar(CategoriaRequest command)
     {
-        var result = await mediatorHandler.EnviarComando(command);
+        var result = await categoriaService.Adicionar(command);
 
         if (!result.IsValid)
         {
@@ -53,29 +50,29 @@ public class CategoriasController(ICategoriaRepository categoriaRepository,
         if (categoria is null)
             return NotFound();
 
-        return View(new CategoriaAtualizarCommand() { Id = categoria.Id, Nome = categoria.Nome });
+        return View(new CategoriaRequest() { Id = categoria.Id, Nome = categoria.Nome });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Alterar(Guid id, CategoriaAtualizarCommand command)
+    public async Task<IActionResult> Alterar(Guid id, CategoriaRequest request)
     {
         var categoria = await categoriaRepository.ObterPorId(id);
 
         if (categoria is null)
             return NotFound();
 
-        command.Id = id;
-        var result = await mediatorHandler.EnviarComando(command);
+        request.Id = id;
+        var result = await categoriaService.Alterar(request);
 
         if (!result.IsValid)
         {
-            foreach(var erro in result.Errors)
+            foreach (var erro in result.Errors)
             {
                 ModelState.AddModelError("", erro.ErrorMessage);
             }
 
-            return View(nameof(Alterar), command);
+            return View(nameof(Alterar), request);
         }
 
         return RedirectToAction(nameof(Index));
@@ -103,9 +100,7 @@ public class CategoriasController(ICategoriaRepository categoriaRepository,
         if (categoria is null)
             return NotFound();
 
-        var command = new CategoriaRemoverCommand(id);
-
-        var result = await mediatorHandler.EnviarComando(command);
+        var result = await categoriaService.Remover(id);
 
         if (!result.IsValid)
         {
